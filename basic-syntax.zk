@@ -1,0 +1,112 @@
+# Variables y constantes
+
+var numero = 10;
+const PI = 3.14;
+var saludar = "Hola Mundo";
+var miLista = [1, 2, 3, 4, 5];
+var miObjeto = {"nombre": "Juan", "edad": 30};
+
+mostrar(numero);
+mostrar(PI);
+mostrar(saludar);
+mostrar(miLista);
+mostrar(miObjeto);
+
+# Operatoria Basica 
+
+var suma = 5 + 3;
+var resta = 10 - 4;
+var multiplicacion = 6 * 7;
+var division = 20 / 4;
+var modulo = 10 % 3;
+
+mostrar("el resultado de la suma es", suma);
+mostrar("el resultado de la resta es", resta);
+mostrar("la multiplicaciones ",multiplicacion);
+mostrar("el resultado de la division es ", division);
+mostrar("el resto de 10 entre 3 es ",modulo);
+
+# Operaciones de Comparación
+
+var igual = 5 == 5;
+var diferente = 5 != 3;
+var mayor = 10 > 5;
+var menor = 3 < 7;
+var mayorIgual = 10 >= 10;
+var menorIgual = 5 <= 10;
+
+mostrar("compramos 5 == 5 y el resultado es ", igual);
+mostrar("evaluamos si 5 es distinto a 3 y el resultado es ", diferente);
+mostrar("10 > a 5 ?? ", mayor);
+mostrar("3 es menor que 7? ", menor);
+mostrar(mayorIgual, menorIgual);
+
+# Operadores lógicos
+
+var and = verdadero && verdadero;
+var or = verdadero || falso;
+var not = !falso;
+
+mostrar(and, or, not);
+
+# Estructuras de control
+
+var numeroSi = 10;
+
+si (numeroSi > 5) entonces {
+    mostrar("El numero es mayor que 5");
+} sino {
+    mostrar("El numero es menor o igual a 5");
+}
+
+# Estructuras de control bucles
+
+var valorBase = 0;
+mientras (valorBase < 5) {
+    mostrar("Contador:", valorBase);
+    valorBase = valorBase + 1;
+}
+
+
+para (var i = 0; i < 3; i = i+1) {
+    mostrar("Iteracion:", i);
+}
+
+# var j = 0;
+# hacer_mientras {
+#    mostrar("Hacer mientras:", j);
+#    j = j + 1;
+# } (j < 3);
+
+var a = 5;
+var b = 10;
+
+# Funciones
+funcion suma(a , b) {
+    retorna a + b;
+}
+
+funcion resta(a, b) {
+    retorna a - b;
+}
+
+funcion multiplicar(a, b) {
+    retorna a * b;
+}
+
+funcion dividir(a, b) {
+    si (b == 0) {
+        mostrar("Error: Division por cero");
+        retorna 0;
+    }
+    retorna a / b;
+}
+
+mostrar("Suma:", suma(a,b)); 
+mostrar("Resta:", resta(a,b));
+mostrar("Multiplicacion:", multiplicar(a,b));
+mostrar("Division:", dividir(a,b));
+
+# Entrada de usuario
+mostrar("Hola,", ingresar("Ingresa tu nombre: "));
+
