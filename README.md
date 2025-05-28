@@ -1,178 +1,202 @@
-# ⚜️ Zisk: Arquitectura de un Intérprete Dinámico y su REPL ⚜️
+# 📖 Documentación del Intérprete y REPL de Zisk 🐍
 
-## 🔹 I. Visión General
+## 🚀 1. Introducción
 
-Zisk se erige como un lenguaje de programación interpretado, cuyo ecosistema se materializa en este proyecto a través de un intérprete robusto y un REPL (Read-Eval-Print Loop) de alta interactividad. Desarrollado en Python 3, Zisk es una sinfonía de componentes meticulosamente diseñados que colaboran para analizar, optimizar opcionalmente, compilar tentativamente a Python, y ejecutar código Zisk con precisión.
+Zisk es un lenguaje de programación interpretado, y este proyecto implementa un intérprete completo junto con un REPL (Read-Eval-Print Loop) 🔄 para interactuar con él. El sistema está construido en Python 3 🐍 y consta de varios componentes clave que trabajan juntos para analizar, (opcionalmente) optimizar ✨, (opcionalmente) compilar a Python 📜, y ejecutar código Zisk ▶️.
 
-> **El REPL de Zisk: Un Ciclo de Procesamiento Refinado**
->
-> 1.  📥 **Recepción (Lee):** Captura el código Zisk introducido por el usuario, ya sea como directivas individuales o bloques estructurados.
-> 2.  ⚙️ **Procesamiento (Evalúa):**
->     *   🔩 **`ZiskLexer` (Tokenizador):** Segmenta el código fuente en unidades léxicas fundamentales (tokens): directivas clave, identificadores, literales numéricos, operadores simbólicos.
->     *   🌲 **`ZiskParser` (Analizador Sintáctico):** Construye un Árbol de Sintaxis Abstracta (AST) a partir de la secuencia de tokens, representando la jerarquía estructural del código.
->     *   🔬 **`ZiskOptimizer` (Optimizador):** (Opcional) Aplica transformaciones estratégicas al AST para potenciar la eficiencia (ej. plegado de constantes).
->     *   🧠 **Motor de Ejecución (en `ZiskREPL.execute`):** El núcleo operativo que navega el AST, administrando variables, ámbitos, flujos de control y la semántica de las operaciones.
->     *   🛡️ **`ZiskTypeSystem` (Sistema de Tipos):** Supervisa la coherencia y compatibilidad de tipos durante la ejecución (y potencialmente en fases previas), facilitando la inferencia y validación.
-> 3.  📤 **Resultado (Imprime):** Presenta la salida de la evaluación (si existe) en la consola.
-> 4.  🔁 **Iteración (Bucle):** Reinicia el ciclo, preparado para la siguiente entrada.
+**🎯 Esencialmente, el REPL de Zisk hace lo siguiente:**
 
-Adicionalmente, el sistema incorpora un **`ZiskCompiler`**, con la capacidad de transcribir el AST de Zisk a código Python, abriendo la posibilidad de "compilar" scripts Zisk. El REPL está enriquecido con comandos de utilidad (ej. `:load`, `:help`) para una experiencia de desarrollo ágil.
+1.  **✍️ Lee** el código Zisk introducido por el usuario (línea por línea o bloques multilínea).
+2.  **🧠 Analiza (Evalúa)** este código:
+    *   **🔍 `ZiskLexer`:** Convierte el texto del código en una secuencia de "tokens" (palabras clave, identificadores, números, operadores, etc.).
+    *   **🌳 `ZiskParser`:** Toma estos tokens y construye un Árbol de Sintaxis Abstracta (AST), que es una representación estructurada del código.
+    *   **✨ `ZiskOptimizer`:** (Opcional) Realiza transformaciones simples en el AST para mejorar su eficiencia (ej. plegado de constantes).
+    *   **⚙️ Motor de Ejecución** (parte de `ZiskREPL.execute`): Recorre el AST y ejecuta las instrucciones, gestionando variables, ámbitos, llamadas a funciones, control de flujo, y operaciones.
+    *   **🏷️ `ZiskTypeSystem`:** Se utiliza durante la ejecución (y potencialmente en el parsing si se expande) para verificar la compatibilidad de tipos y realizar inferencias.
+3.  **📄 Imprime** el resultado de la evaluación (si lo hay) en la consola.
+4.  **🔄 Repite (Loop)** el proceso, esperando la siguiente entrada del usuario.
 
----
+Además de la interpretación directa del AST, el sistema también incluye un **🏗️ `ZiskCompiler`** que puede traducir el AST de Zisk a código Python ejecutable, permitiendo potencialmente la "compilación" de scripts Zisk a Python. El REPL también maneja comandos especiales (ej. `:cargar`, `:ayuda`) para mejorar la interactividad.
 
-## 🔹 II. Componentes Fundamentales del Sistema
+## 🧩 2. Componentes del Sistema
 
-<details>
-<summary>❗ <strong>Gestión de Excepciones: Protocolos de Error</strong></summary>
+### ⚠️ 2.1. Excepciones Personalizadas
 
-Zisk implementa un sistema de excepciones personalizado para un diagnóstico de errores preciso y contextualizado.
+Zisk define sus propias excepciones para un manejo de errores más específico y claro.
 
-*   **`ZiskError(Exception)`**: Clase base para todas las anomalías en Zisk. Encapsula mensaje, línea y columna.
-    *   **`ZiskTypeError(ZiskError)`**: Para conflictos de signatura de tipos.
-    *   **`ZiskRuntimeError(ZiskError)`**: Errores genéricos detectados durante la fase de ejecución.
-    *   **`ZiskAttributeError(ZiskRuntimeError)`**: Para intentos de acceso a atributos/propiedades no definidos.
-    *   **`ZiskIndexError(ZiskRuntimeError)`**: Para direccionamiento fuera de los límites de secuencias.
-    *   **`ZiskKeyError(ZiskRuntimeError)`**: Para referencias a claves inexistentes en colecciones asociativas.
-*   **`BreakException(Exception)`**: Mecanismo interno para la directiva `break`.
-*   **`ContinueException(Exception)`**: Mecanismo interno para la directiva `continua`.
-*   **`ReturnException(Exception)`**: Mecanismo interno para la directiva `retorna`, portando el valor de retorno.
-</details>
+*   **`ZiskError(Exception)`** ❌: Clase base para todos los errores de Zisk. Almacena un mensaje, línea y columna donde ocurrió el error.
+    *   **`ZiskTypeError(ZiskError)`** 🚫: Para errores relacionados con tipos de datos incompatibles.
+    *   **`ZiskRuntimeError(ZiskError)`** 💥: Errores generales que ocurren durante la ejecución del código Zisk.
+    *   **`ZiskAttributeError(ZiskRuntimeError)`** 🔍❓: Para accesos a atributos/propiedades inexistentes.
+    *   **`ZiskIndexError(ZiskRuntimeError)`** 🔢❓: Para índices fuera de rango en listas o cadenas.
+    *   **`ZiskKeyError(ZiskRuntimeError)`** 🔑❓: Para claves no encontradas en objetos/diccionarios.
+*   **`BreakException(Exception)`** 🛑: Usada internamente para implementar la sentencia `break` en bucles.
+*   **`ContinueException(Exception)`** ↪️: Usada internamente para implementar la sentencia `continua` en bucles.
+*   **`ReturnException(Exception)`** 📤: Usada internamente para implementar la sentencia `retorna` desde funciones/métodos. Almacena el valor a retornar.
 
-<details>
-<summary>🔩 <strong>`ZiskLexer`: El Ingeniero Léxico</strong></summary>
+### 🔍 2.2. `ZiskLexer` (Analizador Léxico)
 
-Responsable de la transformación del código fuente en una secuencia estructurada de tokens.
+El lexer es responsable de tomar el código fuente de Zisk como una cadena y dividirlo en una secuencia de tokens.
 
 *   **`__init__(self)`**:
-    *   Define `self.tokens_spec`: Un catálogo de especificaciones de tokens (nombre y patrón regex). Las palabras clave se priorizan por longitud para una correcta disambiguación.
-    *   Precompila los patrones regex para optimizar el rendimiento del análisis.
+    *   Define `self.tokens_spec`: Una lista de tuplas, donde cada tupla contiene el nombre del tipo de token y una expresión regular para reconocerlo. Las palabras clave están ordenadas por longitud descendente para evitar ambigüedades con prefijos.
+    *   Precompila todas las expresiones regulares en un solo patrón para eficiencia.
+    *   Inicializa contadores de línea y columna.
 *   **`tokenize(self, code: str) -> List[Tuple[str, str, int, int]]`**:
-    *   Procesa el código de entrada, identificando tokens según las especificaciones.
-    *   Descarta elementos no estructurales como comentarios y espacios en blanco.
-    *   Caracteres no reconocibles (`NO_VALIDO`) generan un `ZiskError`.
-    *   Produce una lista de tuplas: `(TIPO_TOKEN, VALOR_TOKEN, NUM_LINEA, NUM_COLUMNA)`.
-</details>
+    *   Itera sobre el código de entrada, intentando hacer coincidir los patrones de token en la posición actual.
+    *   Ignora comentarios (`COMENTARIO_LINEA`, `COMENTARIO_BLOQUE`) y espacios en blanco (`ESPACIO`).
+    *   Si un carácter no coincide con ningún token válido (y no es espacio/comentario), se marca como `NO_VALIDO` y lanza un `ZiskError`.
+    *   Devuelve una lista de tuplas, donde cada tupla es `(TIPO_TOKEN, VALOR_TOKEN, NUM_LINEA, NUM_COLUMNA)`.
 
-<details>
-<summary>🌲 <strong>`ZiskParser`: El Arquitecto Sintáctico</strong></summary>
+### 🌳 2.3. `ZiskParser` (Analizador Sintáctico)
 
-Construye el Árbol de Sintaxis Abstracta (AST) a partir de la secuencia de tokens, reflejando la gramática del lenguaje.
+El parser toma la lista de tokens generada por el lexer y construye un Árbol de Sintaxis Abstracta (AST). El AST es una representación jerárquica de la estructura del código. Utiliza un enfoque de descenso recursivo.
 
 *   **`__init__(self)`**:
-    *   Gestiona la lista de tokens, el token actual, y una pila de contextos (`self.scopes`) para el análisis semántico preliminar.
-    *   `self.current_class`: Indicador de contexto para el parsing de definiciones de clase.
-*   **Gestión de Ámbitos (Parser)**: Funciones para administrar la visibilidad y declaración de identificadores.
-*   **`parse(self, tokens)`**: Inicia el proceso de construcción del AST.
-*   **Estructuras de Parsing**:
-    *   Métodos dedicados para cada construcción del lenguaje: `parse_funcion()`, `parse_clase()`, `parse_declaracion_variable()`, etc.
-    *   Implementa una **Jerarquía de Precedencia de Operadores** para el correcto análisis de expresiones complejas.
-    *   `parse_expresion_primaria()`: Analiza los componentes más elementales: literales, identificadores, `(expresiones)`, `nuevo Clase()`, `este`, `ingresar()`, `[]` (listas), y `{}` (objetos).
-*   **`consume(self, ...)`**: Valida y avanza al siguiente token.
-*   **El AST**: Una representación arborescente del código mediante tuplas anidadas. Ej: `('PROGRAMA', [('DECLARACION_VAR', 'x', 'entero', ('NUMERO', 10))])`.
-</details>
+    *   Inicializa la lista de tokens, el índice del token actual, y una pila de ámbitos (`self.scopes`) para el análisis semántico básico (verificar declaraciones de variables).
+    *   `self.current_class`: Rastrea si el parser está dentro de la definición de una clase.
+*   **Métodos de gestión de ámbito (parser)**: `enter_scope()`, `exit_scope()`, `current_scope()`, `variable_declared_in_current_scope()`, `variable_declared()`.
+*   **`parse(self, tokens)`**: Inicia el proceso de parsing.
+*   **`parse_programa()`**: Punto de entrada, parsea una secuencia de declaraciones.
+*   **`parse_declaracion()`**: Determina si el token actual inicia una función, clase, variable, constante, importación o una sentencia general.
+*   **Métodos de parsing específicos**:
+    *   `parse_funcion()`: Parsea `funcion nombre(params): tipo_retorno { cuerpo }`.
+    *   `parse_clase()`: Parsea `clase Nombre extiende SuperClase { miembros }`.
+    *   `parse_declaracion_miembro_clase()`: Parsea atributos de clase.
+    *   `parse_metodo_clase()`: Parsea métodos de clase, incluyendo modificadores como `estatico`, `publico`, `privado`.
+    *   `parse_declaracion_variable()`: Parsea `var nombre: tipo = valor;`.
+    *   `parse_declaracion_constante()`: Parsea `const NOMBRE: tipo = valor;`.
+    *   `parse_sentencia()`: Dirige a otros métodos de parsing de sentencias (`parse_si()`, `parse_mientras()`, etc.) o expresiones.
+    *   **Jerarquía de Expresiones (`parse_expresion_...`)**: Un conjunto de métodos para parsear expresiones respetando la precedencia de operadores (asignación, lógicos, comparación, adición, multiplicación, unarios, llamada/acceso, primarios).
+        *   `parse_expresion_primaria()`: Parsea los elementos más básicos como literales (números, cadenas, booleanos, nulo), identificadores, expresiones entre paréntesis, `nuevo Clase()`, `este`, `ingresar()`, literales de lista `[]` y objeto `{}`.
+    *   `parse_lista_literal()`, `parse_objeto_literal()`.
+    *   **Sentencias de Control**: `parse_si()`, `parse_mientras()`, `parse_para()`, `parse_hacer_mientras()`.
+    *   **Otras Sentencias**: `parse_mostrar()`, `parse_retorna()`, `parse_break()`, `parse_continua()`, `parse_try_catch()`, `parse_importa()`.
+    *   `parse_bloque()`: Parsea un bloque de sentencias encerrado en `{}`. Abre y cierra un nuevo ámbito.
+    *   `parse_bloque_o_sentencia()`: Permite que estructuras como `si` o `mientras` tengan un bloque `{}` o una sola sentencia.
+*   **`consume(self, expected_type, expected_value)`**: Avanza al siguiente token, verificando opcionalmente su tipo y/o valor. Lanza un error si no coincide.
+*   **`consume_optional_semicolon()`**: Consume un punto y coma si está presente.
 
-<details>
-<summary>🛡️ <strong>`ZiskTypeSystem`: El Verificador de Tipos</strong></summary>
+### 🏷️ 2.4. `ZiskTypeSystem` (Sistema de Tipos)
 
-Asegura la integridad y coherencia de los tipos de datos dentro del ecosistema Zisk.
+Gestiona la información de tipos, realiza comprobaciones y ayuda en la inferencia de tipos.
 
 *   **`__init__(self)`**:
-    *   `self.type_map`: Correlaciona los designadores de tipo de Zisk (ej. `texto`) con sus equivalentes en Python (ej. `str`).
-    *   Mantiene registros de anotaciones de tipo, jerarquías de clases y signaturas de métodos.
-*   **`check_type(...)`**: Valida la compatibilidad de un valor Python con un tipo Zisk especificado.
-*   **`infer_type(...)`**: Intenta deducir el tipo Zisk de un valor Python.
-*   **`validate_assignment(...)`**: Determina si un valor es asignable a un contexto tipado (variable, parámetro, retorno).
-*   Funciones adicionales para el registro y consulta de metadatos de tipos para clases, métodos y variables.
-</details>
+    *   `self.type_map`: Mapea nombres de tipos de Zisk (`entero`, `texto`, etc.) a tipos de Python (`int`, `str`, etc.).
+    *   `self.type_annotations`: Almacena anotaciones de tipo para variables.
+    *   `self.class_hierarchy`: Almacena la relación de herencia entre clases de Zisk.
+    *   `self.method_signatures`: Almacena las firmas de los métodos (tipos de parámetros y retorno).
+*   **`check_type(self, value, expected_type_zisk, ...)`**: ✅ Verifica si un valor Python es compatible con un tipo Zisk esperado. Considera clases definidas por el usuario.
+*   **`infer_type(self, value)`**: 🤔 Intenta deducir el tipo Zisk de un valor Python.
+*   **`validate_assignment(self, ..., expected_type_zisk, ...)`**: ✅ Valida si un valor puede ser asignado a una variable/parámetro/retorno con un tipo Zisk esperado.
+*   **`add_variable_annotation(...)`, `get_variable_type(...)`**: Gestiona anotaciones de tipo para variables.
+*   **`add_class(...)`, `add_method_signature(...)`, `get_method_signature(...)`**: Registra información sobre clases y métodos para el análisis de tipos.
+*   **`validate_function_call(...)`**: Comprueba si los argumentos de una llamada a función coinciden con los tipos esperados de los parámetros.
+*   **`is_subclass_or_same(...)`**: Verifica la relación de herencia entre clases Zisk.
 
-<details>
-<summary>🔬 <strong>`ZiskOptimizer`: El Estratega de Optimización</strong></summary>
+### ✨ 2.5. `ZiskOptimizer` (Optimizador)
 
-Aplica transformaciones selectivas al AST para mejorar la eficiencia y concisión del código.
+Realiza transformaciones básicas en el AST para mejorar potencialmente el rendimiento o reducir el código.
 
-*   **`__init__(self)`**: Configura la activación de pases de optimización específicos.
+*   **`__init__(self)`**: Habilita/deshabilita optimizaciones específicas (`constant_folding`, `dead_code_elimination`).
 *   **`optimize(self, ast_node)`**:
-    *   Procesa el AST (generalmente en post-orden).
-    *   **Plegado de Constantes**: Reemplaza expresiones aritméticas con literales constantes por su resultado precalculado.
-    *   **Eliminación de Código Inalcanzable**: Suprime bloques condicionales (`si`, `mientras`) cuya condición es estáticamente evaluable a `falso`.
-</details>
+    *   Recorre el AST (post-orden).
+    *   **Plegado de Constantes**: Si encuentra una operación aritmética con operandos literales numéricos (ej. `2 + 3`), la reemplaza por el resultado (`('NUMERO', 5)`).
+    *   **Eliminación de Código Muerto**:
+        *   Si encuentra `si (verdadero) { ... } sino { ... }`, reemplaza toda la estructura `si` por el bloque del `si`.
+        *   Si encuentra `si (falso) { ... } sino { ... }`, reemplaza por el bloque `sino` (o nada si no hay `sino`).
+        *   Si encuentra `mientras (falso) { ... }`, elimina el bucle.
 
-<details>
-<summary>🔄 <strong>`ZiskCompiler`: El Transcriptor a Python</strong></summary>
+### 🏗️🐍 2.6. `ZiskCompiler` (Compilador a Python)
 
-Traduce el Árbol de Sintaxis Abstracta de Zisk a código fuente Python equivalente.
+Traduce el AST de Zisk a código fuente de Python.
 
-*   **`__init__(self)`**: Gestiona el estado de la compilación, como el nivel de indentación.
+*   **`__init__(self)`**: Inicializa el nivel de indentación y el nombre de la clase actual (si aplica). `self.imported_modules` para evitar importaciones duplicadas en el código Python generado.
+*   **`_indent(self)`**: Genera la cadena de indentación actual.
 *   **`compile(self, ast_node)`**:
-    *   Recibe un nodo AST y genera su representación en Python.
-    *   Contiene lógica específica para cada tipo de nodo AST:
-        *   `funcion` Zisk ➡️ `def` Python.
-        *   `clase` Zisk ➡️ `class` Python (incluyendo `__init__` y herencia).
-        *   Funciones nativas Zisk (`mostrar`) ➡️ Funciones Python (`print`).
-        *   Operadores lógicos (`&&`, `||`) ➡️ `and`, `or`.
-    *   Produce código Python indentado y sintácticamente correcto.
-    ```python
-    # Fragmento de salida del compilador
-    class EjemploZisk:
-        def __init__(self):
-            self.valor_instancia = None # type: entero
-        def metodo_ejemplo(self, arg_zisk): # type: texto
-            # -> booleano
-            if len(arg_zisk) > 0:
-                return True
-            return False
-    ```
-</details>
+    *   Método principal que recibe un nodo del AST y devuelve su representación como código Python.
+    *   Utiliza una serie de `if/elif` para manejar cada tipo de nodo del AST (`PROGRAMA`, `FUNCION`, `CLASE`, `ASIGNACION`, `OPERACION_ARITMETICA`, etc.).
+    *   Para cada nodo, genera la sintaxis Python equivalente:
+        *   `funcion` Zisk -> `def` Python.
+        *   `clase` Zisk -> `class` Python (incluyendo herencia y `__init__` para campos de instancia).
+        *   Métodos Zisk -> Métodos Python (con `@staticmethod` si es necesario).
+        *   `var`, `const` Zisk -> Asignaciones Python.
+        *   `importa` Zisk -> `import` Python.
+        *   Estructuras de control (`si`, `mientras`, `para`, `hacer_mientras`, `try-catch`) -> Equivalentes en Python.
+        *   Operaciones Zisk (`&&`, `||`) -> `and`, `or` Python.
+        *   Llamadas a funciones/métodos/constructores Zisk -> Llamadas Python.
+        *   Literales Zisk (`nulo`) -> Literales Python (`None`).
+    *   Maneja la indentación del código Python generado.
+    *   Las llamadas a funciones "nativas" de Zisk como `mostrar` o `ingresar` se traducen a `print` e `input` de Python respectivamente.
 
-<details>
-<summary>🕹️ <strong>`ZiskREPL`: El Núcleo Interactivo y Motor de Ejecución</strong></summary>
+### 💻▶️ 2.7. `ZiskREPL` (REPL y Motor de Ejecución)
 
-El `ZiskREPL` orquesta la interacción con el usuario y contiene la lógica para la ejecución directa del AST.
+Es el corazón interactivo del intérprete. Gestiona el ciclo de lectura, evaluación e impresión, y también contiene la lógica para ejecutar directamente el AST.
 
-*   **`__init__(self, ...)`**:
-    *   Instancia y coordina los componentes: `ZiskLexer`, `ZiskParser`, `ZiskOptimizer`, `ZiskCompiler`, `ZiskTypeSystem`.
-    *   **Contexto de Ejecución (`Runtime Environment`)**:
-        *   `self.scopes`: Pila de ámbitos para la resolución de nombres y almacenamiento de variables.
-        *   `self.functions`: Registro de funciones, tanto nativas del lenguaje como definidas por el usuario.
-        *   `self.classes`: Catálogo de clases Zisk (representadas como clases Python generadas dinámicamente).
-        *   `self.modules`: Colección de módulos Zisk importados.
-        *   `self.current_self`: Referencia a la instancia actual (`este`) en métodos de objeto.
-*   **Funciones Nativas (`_native_...`)**: Implementaciones Python para las funcionalidades incorporadas de Zisk.
-*   **Gestión de Variables (Runtime)**: Funciones para declarar, asignar y recuperar variables, aplicando validaciones de tipo y constancia.
-*   **`execute(self, ast_node)`**: **El intérprete del AST**.
-    *   Navega el AST recursivamente, ejecutando la semántica de cada nodo:
+*   **`__init__(self, type_system)`**:
+    *   Instancia `ZiskLexer`, `ZiskParser`, `ZiskOptimizer`, `ZiskCompiler`.
+    *   Usa una instancia de `ZiskTypeSystem`.
+    *   **Estado del REPL (Runtime)**:
+        *   `self.scopes`: Pila de ámbitos para almacenar variables en tiempo de ejecución. El primer elemento es el ámbito global.
+        *   `self.functions`: Diccionario para funciones definidas por el usuario y funciones nativas (`mostrar`, `ingresar`, `longitud`, `tipo_de`, funciones de conversión).
+        *   `self.classes`: Diccionario para clases Zisk definidas por el usuario (mapeadas a clases Python generadas dinámicamente).
+        *   `self.modules`: Diccionario para módulos Zisk importados 📁.
+        *   `self.current_self`: Almacena la referencia a `este` cuando se ejecuta un método de instancia.
+        *   `self.is_in_loop`, `self.is_in_function`: Contadores para validar `break`/`continue`/`retorna`.
+*   **Funciones Nativas (`_native_...`)**: Implementaciones Python para las funciones incorporadas de Zisk.
+*   **Gestión de Ámbito (Runtime)**: `enter_scope()`, `exit_scope()`, `_get_current_scope()`.
+*   **Operaciones de Variables (Runtime)**:
+    *   `_declare_variable()`: Añade una variable al ámbito actual, verificando si es constante y validando el tipo con `ZiskTypeSystem`.
+    *   `_assign_variable()`: Modifica el valor de una variable existente, verificando si es constante y validando el tipo.
+    *   `_get_variable_value()`: Busca y devuelve el valor de una variable, función, clase o módulo.
+    *   `_get_lvalue_location()`: Ayuda a determinar dónde se debe asignar un valor (variable, atributo de objeto, elemento de lista).
+*   **`execute(self, ast_node)`**:
+    *   Este es el **intérprete del AST** ⚙️🌳. Recorre el árbol nodo por nodo.
+    *   Para cada tipo de nodo (`PROGRAMA`, `BLOQUE`, `DECLARACION_VAR`, `FUNCION`, `CLASE`, `SI`, `MIENTRAS`, `ASIGNACION`, `OPERACION_ARITMETICA`, `LLAMADA`, `IDENTIFICADOR`, etc.):
+        *   Ejecuta la lógica correspondiente.
         *   **Declaraciones**:
-            *   `FUNCION`: Genera un closure Python que encapsula el cuerpo de la función Zisk, gestionando ámbitos y retornos.
-            *   `CLASE`: Construye dinámicamente una clase Python, traduciendo métodos Zisk y configurando atributos.
-            *   `IMPORTA`: Carga y ejecuta módulos externos `.zk` en un contexto aislado.
-        *   **Estructuras de Control**: `SI`, `MIENTRAS`, `PARA`, `TRY_CATCH` implementan la lógica de flujo, respondiendo a excepciones de control.
-        *   **Expresiones**: Se evalúan operaciones, llamadas a función, accesos a miembros/índices y se resuelven literales e identificadores.
-*   **`evaluate(self, code, ...)`**: Proceso completo: `Lexer -> Parser -> Optimizer (opc) -> Compiler (info) -> Execute`.
-*   **`run_repl(self)`**: Inicia el bucle interactivo, gestionando entradas, comandos y errores.
-*   **Comandos de Consola (`handle_repl_command`)**: Procesa directivas especiales del REPL.
-</details>
+            *   `DECLARACION_VAR`/`CONST`: Evalúa el valor (si hay) y lo declara en el ámbito actual.
+            *   `FUNCION`: Crea una función Python wrapper que, al ser llamada, establece un nuevo ámbito, vincula argumentos, ejecuta el cuerpo de la función Zisk y maneja `ReturnException`. Registra esta función en `self.functions`.
+            *   `CLASE`: Crea dinámicamente una clase Python. Los métodos Zisk se convierten en métodos Python (wrappers similares a los de función). Los campos de instancia se inicializan en un `__init__` generado. Las constantes y campos estáticos se vuelven atributos de la clase Python. Registra la clase en `self.classes`.
+            *   `IMPORTA`: Carga y ejecuta un archivo `.zk` 📄 en una nueva instancia de `ZiskREPL` (para aislamiento) y lo hace accesible en el REPL actual.
+        *   **Sentencias de Control**:
+            *   `SI`: Evalúa la condición y ejecuta el bloque correspondiente.
+            *   `MIENTRAS`/`PARA`/`HACER_MIENTRAS`: Ejecutan sus cuerpos iterativamente, manejando `BreakException` y `ContinueException`. `PARA` gestiona su propio ámbito para la variable de inicialización.
+            *   `RETORNA`/`BREAK`/`CONTINUA`: Lanzan sus respectivas excepciones para alterar el flujo de control.
+            *   `TRY_CATCH`: Ejecuta el bloque `try`. Si ocurre una excepción Zisk (o Python), y hay un bloque `catch` compatible, ejecuta el `catch`. El bloque `finally` se ejecuta siempre.
+        *   **Expresiones**:
+            *   `ASIGNACION`: Evalúa el lado derecho, determina la ubicación del lado izquierdo y realiza la asignación, incluyendo operaciones compuestas (`+=`, `-=`).
+            *   Operaciones (aritméticas, lógicas, comparación, unarias): Evalúan operandos y realizan la operación, con chequeos de tipo básicos en runtime y manejo de cortocircuito para `&&` y `||`.
+            *   `LLAMADA`/`LLAMADA_NATIVA`: Evalúa el "llamable" (función/método) y los argumentos, realiza la llamada y devuelve el resultado. Valida tipos de argumentos y retorno si la función/método Zisk tiene metadatos.
+            *   `CONSTRUCTOR` (`nuevo Clase(...)`): Busca la clase Python, evalúa argumentos y crea una instancia.
+            *   `ACCESO_MIEMBRO` (`obj.miembro`): Evalúa el objeto y devuelve el atributo o método.
+            *   `ACCESO_INDICE` (`col[indice]`): Evalúa la colección y el índice, y devuelve el elemento. Soporta listas, diccionarios y cadenas.
+            *   Literales (`NUMERO`, `CADENA`, `BOOLEANO`, `NULO`, `LISTA_LITERAL`, `OBJETO_LITERAL`): Devuelven su valor Python correspondiente.
+            *   `IDENTIFICADOR`: Busca el valor en los ámbitos.
+            *   `ESTE`: Devuelve el valor de `self.current_self`.
+*   **`evaluate(self, code: str, optimize: bool = True)`**: Orquesta el proceso: `lex.tokenize -> parser.parse -> optimizer.optimize (opc) -> compiler.compile (info) -> self.execute`.
+*   **`run_repl(self)`**: Inicia el bucle interactivo 🔄. Maneja entrada multilínea, comandos especiales y errores.
+*   **`handle_repl_command(self, comando_linea: str)`**: Procesa comandos como `:salir`, `:ayuda`, `:cargar`, `:vars`, etc.
+*   **`load_and_execute_file(self, filepath: str, ...)`**: Carga un archivo `.zk` 📄, lo ejecuta y opcionalmente guarda el código Python compilado.
+*   **`show_repl_vars/funcs/clases/modules()`**: Comandos para inspeccionar el estado del REPL 📊.
 
----
+## 📊 3. Flujo de Ejecución Típico (en el REPL)
 
-## 🔹 III. Flujo de Procesamiento Estándar
+1.  🧑‍💻 Usuario introduce código Zisk.
+2.  `ZiskREPL.run_repl()` captura la entrada.
+3.  Llama a `ZiskREPL.evaluate(codigo)`:
+    a.  `ZiskLexer.tokenize(codigo)` -> `tokens` 🔍
+    b.  `ZiskParser.parse(tokens)` -> `ast_original` 🌳
+    c.  (Si `optimize` es `True`) `ZiskOptimizer.optimize(ast_original)` -> `ast_optimizado` ✨
+    d.  (Para información o guardado) `ZiskCompiler.compile(ast_optimizado)` -> `codigo_python_compilado` 📜🐍
+    e.  `ZiskREPL.execute(ast_optimizado)` -> `resultado_ejecucion` ▶️
+        *   El método `execute` recorre el AST, interactuando con `self.scopes`, `self.functions`, `self.classes`, `ZiskTypeSystem` y lanzando/manejando excepciones de control de flujo.
+4.  `ZiskREPL.run_repl()` imprime `resultado_ejecucion` (si no es `None`) 📄.
+5.  El ciclo se repite 🔄.
 
-1.  ⌨️ **Usuario:** Introduce código Zisk.
-2.  `ZiskREPL.run_repl()`: Captura la entrada.
-3.  `ZiskREPL.evaluate(codigo)`:
-    a.  `ZiskLexer.tokenize()` ➡️ `tokens`.
-    b.  `ZiskParser.parse()` ➡️ `ast_original`.
-    c.  (Opcional) `ZiskOptimizer.optimize()` ➡️ `ast_optimizado`.
-    d.  (Informativo) `ZiskCompiler.compile()` ➡️ `codigo_python_compilado`.
-    e.  `ZiskREPL.execute(ast_optimizado)` ➡️ `resultado_ejecucion`.
-        *   `execute` atraviesa el AST, interactuando con el entorno de ejecución (`scopes`, `functions`, `classes`, `ZiskTypeSystem`).
-4.  `ZiskREPL.run_repl()`: Muestra `resultado_ejecucion`.
-5.  El ciclo se repite.
+## 💡 4. Uso
 
----
-
-## 🔹 IV. Guía de Inicio Rápido
-
-### 1. Iniciar el Entorno Interactivo (REPL)
+### ⌨️ 4.1. Ejecutar el REPL
 
 ```bash
-python nombre_del_archivo_interprete.py
+python nombre_del_archivo.py
