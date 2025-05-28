@@ -238,24 +238,9 @@ mostrar("Hola,", ingresar("Ingresa tu nombre: "));
 
 ---
 
-## 🌈 Bonus: ¿Cómo resaltar Zisk en editores?
-
-Puedes definir Zisk como un lenguaje personalizado en:
-
-- **VSCode** usando `zisk.tmLanguage.json`
-- **Prism.js** o **highlight.js** para sitios web
-
-Palabras clave sugeridas:
-
-```
-var, const, funcion, retorna, si, sino, mientras, para, mostrar, ingresar,
-verdadero, falso, entonces
-```
-
----
 
 ## 📢 Créditos
 
-> Manual creado por **Francisco** – Desarrollador de Zisk  
+> Manual creado por **Francisco Díaz** – Desarrollador de Zisk  
 > Versión: `v0.1.0` – En constante evolución 🚀  
 > ¡Hackea, prueba y comparte!
