@@ -77,6 +77,10 @@ El parser toma la lista de tokens generada por el lexer y construye un Árbol de
 *   **`consume(self, expected_type, expected_value)`**: Avanza al siguiente token, verificando opcionalmente su tipo y/o valor. Lanza un error si no coincide.
 *   **`consume_optional_semicolon()`**: Consume un punto y coma si está presente.
 
+El AST generado es una estructura de tuplas anidadas, por ejemplo:
+Use code with caution.
+Markdown
+('PROGRAMA', [('DECLARACION_VAR', 'x', 'entero', ('NUMERO', 10)), ...])
 ### 🏷️ 2.4. `ZiskTypeSystem` (Sistema de Tipos)
 
 Gestiona la información de tipos, realiza comprobaciones y ayuda en la inferencia de tipos.
@@ -200,3 +204,170 @@ Es el corazón interactivo del intérprete. Gestiona el ciclo de lectura, evalua
 
 ```bash
 python nombre_del_archivo.py
+Use code with caution.
+📜 5. Sintaxis del Lenguaje Zisk
+Esta sección describe la sintaxis básica del lenguaje Zisk con ejemplos.
+🏷️ 5.1. Variables y Constantes
+Las variables se declaran con var y las constantes con const. Zisk infiere tipos básicos pero también permite anotaciones de tipo (no mostradas en estos ejemplos simples).
+var numero = 10;
+const PI = 3.14;
+var saludar = "Hola Mundo";
+var miLista = [1, 2, 3, 4, 5];
+var miObjeto = {"nombre": "Juan", "edad": 30};
+
+mostrar(numero);
+mostrar(PI);
+mostrar(saludar);
+mostrar(miLista);
+mostrar(miObjeto);
+Use code with caution.
+Zisk
+➕➖✖️➗ 5.2. Operatoria Básica
+Zisk soporta las operaciones aritméticas estándar.
+var suma = 5 + 3;
+var resta = 10 - 4;
+var multiplicacion = 6 * 7;
+var division = 20 / 4;
+var modulo = 10 % 3; // Resto de la división
+
+mostrar("el resultado de la suma es", suma);
+mostrar("el resultado de la resta es", resta);
+mostrar("la multiplicacion es ", multiplicacion);
+mostrar("el resultado de la division es ", division);
+mostrar("el resto de 10 entre 3 es ", modulo);
+Use code with caution.
+Zisk
+⚖️ 5.3. Operaciones de Comparación
+Se utilizan para comparar valores. Devuelven verdadero o falso.
+var igual = 5 == 5;         // verdadero
+var diferente = 5 != 3;     // verdadero
+var mayor = 10 > 5;         // verdadero
+var menor = 3 < 7;          // verdadero
+var mayorIgual = 10 >= 10;  // verdadero
+var menorIgual = 5 <= 10;   // verdadero
+
+mostrar("comparamos 5 == 5 y el resultado es ", igual);
+mostrar("evaluamos si 5 es distinto a 3 y el resultado es ", diferente);
+mostrar("10 > a 5 ?? ", mayor);
+mostrar("3 es menor que 7? ", menor);
+mostrar("10 >= 10:", mayorIgual, "5 <= 10:", menorIgual);
+Use code with caution.
+Zisk
+💡 5.4. Operadores Lógicos
+Permiten combinar expresiones booleanas.
+&& (Y lógico): verdadero si ambos operandos son verdadero.
+|| (O lógico): verdadero si al menos un operando es verdadero.
+! (NO lógico): Invierte el valor booleano del operando.
+// Asumiendo que 'verdadero' y 'falso' son palabras clave para booleanos
+var andLogico = verdadero && verdadero; // verdadero
+var orLogico = verdadero || falso;   // verdadero
+var notLogico = !falso;            // verdadero
+
+mostrar("Resultado AND:", andLogico, "Resultado OR:", orLogico, "Resultado NOT:", notLogico);
+Use code with caution.
+Zisk
+🔀 5.5. Estructuras de Control
+❓ 5.5.1. Condicionales (si/sino)
+Ejecutan bloques de código basados en una condición. La cláusula entonces es opcional en algunos diseños, aquí se muestra como parte del ejemplo original.
+var numeroSi = 10;
+
+si (numeroSi > 5) entonces {
+    mostrar("El numero es mayor que 5");
+} sino {
+    mostrar("El numero es menor o igual a 5");
+}
+
+var otroNumero = 3;
+si (otroNumero > 5) entonces {
+    mostrar("Este no se mostrará");
+} sino si (otroNumero == 3) entonces { // Ejemplo de 'sino si'
+    mostrar("El número es exactamente 3");
+} sino {
+    mostrar("Este tampoco se mostrará");
+}
+Use code with caution.
+Zisk
+🔄 5.5.2. Bucles
+Permiten repetir bloques de código.
+Bucle mientras: Repite mientras una condición sea verdadera.
+var valorBase = 0;
+mientras (valorBase < 5) {
+    mostrar("Contador (mientras):", valorBase);
+    valorBase = valorBase + 1;
+}
+Use code with caution.
+Zisk
+Bucle para: Una forma más estructurada de iterar un número específico de veces.
+para (var i = 0; i < 3; i = i+1) {
+    mostrar("Iteracion (para):", i);
+}
+Use code with caution.
+Zisk
+Bucle hacer_mientras (Sintaxis de ejemplo): Ejecuta el bloque al menos una vez, y luego repite mientras la condición sea verdadera. (El ejemplo original estaba comentado, se presenta aquí como una posible sintaxis).
+# var j = 0;
+# hacer_mientras {
+#    mostrar("Hacer mientras:", j);
+#    j = j + 1;
+# } (j < 3); // La condición al final
+Use code with caution.
+Zisk
+(Nota: La sintaxis exacta y soporte de hacer_mientras dependerá de la implementación final en Zisk).
+🛠️ 5.6. Funciones
+Bloques de código reutilizables que pueden aceptar parámetros y retornar valores.
+var numA = 15;
+var numB = 3;
+
+funcion suma(a, b) {
+    retorna a + b;
+}
+
+funcion resta(a, b) {
+    retorna a - b;
+}
+
+funcion multiplicar(a, b) {
+    retorna a * b;
+}
+
+funcion dividir(a, b) {
+    si (b == 0) {
+        mostrar("Error: Division por cero no permitida.");
+        retorna nulo; // O un valor especial para error
+    }
+    retorna a / b;
+}
+
+mostrar("Suma:", suma(numA, numB)); 
+mostrar("Resta:", resta(numA, numB));
+mostrar("Multiplicacion:", multiplicar(numA, numB));
+mostrar("Division:", dividir(numA, numB));
+mostrar("Division por cero:", dividir(numA, 0));
+Use code with caution.
+Zisk
+⌨️ 5.7. Entrada de Usuario
+Permite interactuar con el usuario para obtener datos durante la ejecución.
+mostrar("Bienvenido al programa de saludo.");
+var nombreUsuario = ingresar("Por favor, ingresa tu nombre: ");
+mostrar("Hola,", nombreUsuario, "! Que tengas un buen día.");
+Use code with caution.
+Zisk
+**Cambios y adiciones en la nueva sección:**
+
+1.  **Nueva Sección Principal:** Añadido `## 📜 5. Sintaxis del Lenguaje Zisk`.
+2.  **Subsecciones:** Cada parte de la sintaxis (variables, operadores, etc.) es una subsección (`###`) con un icono relevante.
+    *   `🏷️` para Variables y Constantes.
+    *   `➕➖✖️➗` para Operatoria Básica (combiné los iconos).
+    *   `⚖️` para Operaciones de Comparación.
+    *   `💡` para Operadores Lógicos.
+    *   `🔀` para Estructuras de Control, con sub-subsecciones:
+        *   `❓` para Condicionales.
+        *   `🔄` para Bucles.
+    *   `🛠️` para Funciones.
+    *   `⌨️` para Entrada de Usuario.
+3.  **Bloques de Código:** Todo el código de ejemplo está dentro de bloques de código ` ```zisk ... ``` `. Esto es importante para la legibilidad y si alguna vez se usa un resaltador de sintaxis para Zisk.
+4.  **Comentarios en Código:** Añadí pequeños comentarios explicativos directamente en algunos ejemplos de código para mayor claridad (ej. `// verdadero`).
+5.  **Pequeñas Introducciones:** Agregué frases introductorias cortas para cada subsección de sintaxis.
+6.  **Palabras Clave:** Se han resaltado implícitamente las palabras clave del lenguaje Zisk (`var`, `const`, `mostrar`, `si`, `sino`, `entonces`, `mientras`, `para`, `funcion`, `retorna`, `ingresar`, `verdadero`, `falso`, `nulo`) al estar dentro de los bloques de código y en la descripción de las funcionalidades.
+7.  **Nota sobre `hacer_mientras`:** Como en tu ejemplo original estaba comentado, añadí una nota indicando que la sintaxis y soporte dependerán de la implementación. Mantuve los `#` como los usaste en tu ejemplo para ese bloque.
+8.  **Consistencia:** Se intentó mantener la consistencia en el uso de iconos y formato con la parte anterior del documento.
+9.  **Clarificación en ejemplos:** Mejoré ligeramente los mensajes de `mostrar` en algunos ejemplos para que la salida sea más descriptiva.
